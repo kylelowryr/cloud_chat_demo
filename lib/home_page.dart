@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:my_app_groupproject/home_page_test.dart';
 import 'package:my_app_groupproject/pages/chat_screen.dart';
 import 'package:my_app_groupproject/pages/login_page.dart';
 import 'package:my_app_groupproject/pages/post_page.dart';
+import 'package:my_app_groupproject/pages/profile_page.dart';
 import 'package:my_app_groupproject/signin_google_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -55,7 +55,13 @@ class _HomePageState extends State<HomePage> {
 
                       }),
                   IconButton(icon: Icon(Icons.add_alert), onPressed: () {}),
-                  GoogleUserCircleAvatar(identity: getGoogleUser(),foregroundColor: Colors.blueAccent,)
+                  IconButton(icon: GoogleUserCircleAvatar(identity: getGoogleUser(),foregroundColor: Colors.blueAccent,), onPressed: (){
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) {
+                        return profile();
+                      },
+                    ));
+                  })
 
                   ,
                   Container(
@@ -161,13 +167,15 @@ class CloudsStream extends StatelessWidget {
           final cloudBody = cloud.data()['body'] ?? '';
           final cloudUsername = cloud.data()['username'] ?? '';
           final cloudPostId = cloud.data()['postId'] ?? '';
+          final cloudOwnerId = cloud.data()['ownerId'] ?? '';
 
 
           final cloudBubble = CloudBubble(
             Title: cloudTitle,
             Body: cloudBody,
-            Username:cloudUsername
-
+            Username:cloudUsername,
+            PostId: cloudPostId,
+            OwnerId: cloudOwnerId,
           );
 
           List<String> postIdList = [];
@@ -211,8 +219,10 @@ class CloudBubble extends StatelessWidget {
       this.Body,
       this.Date,
       this.Username,
-      this.PostId,
+        @required this.PostId,
       this.OwnerId});
+
+
 
   final String Title;
   final String Body;
@@ -221,7 +231,12 @@ class CloudBubble extends StatelessWidget {
   final String PostId;
   final Timestamp Date;
 
-  String postIdcur;
+
+
+  String getPid(){
+    String Ppid = PostId;
+    return Ppid;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -280,9 +295,10 @@ class CloudBubble extends StatelessWidget {
                       onPressed: (){
 
                         print(PostId);
+                        print(OwnerId);
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) {
-                            return ChatScreen(PostIdNow: PostId,OwnerId: OwnerId,);
+                            return ChatScreen(PostId: PostId,OwnerId: OwnerId,);
                           },
                         ));
                       },
